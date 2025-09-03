@@ -32,6 +32,7 @@ const Home = () => {
 
         <div className="header-buttons">
           <Link to="/login" className="login-btn">Login</Link>
+          <Link to="/register" className="register-btn">Register</Link>
           <button onClick={toggleDark} className="dark-toggle">
             {darkMode ? '☀️ Light Mode' : '🌙 Dark Mode'}
           </button>
@@ -84,3 +85,4 @@ const Home = () => {
 };
 
 export default Home;
+
