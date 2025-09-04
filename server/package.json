@@ -2,8 +2,8 @@
   "name": "server",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {"dev": "nodemon index.js",
-    "start": "node index.js",
+  "scripts": {"dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev"
   },
@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.15.0",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0"

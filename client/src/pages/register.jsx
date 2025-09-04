@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import api from "../api/axios";
 import "./register.css";
 
 export default function RegisterPage() {
@@ -33,14 +34,8 @@ export default function RegisterPage() {
     if (Object.keys(validationErrors).length > 0) return;
 
     try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
+      const res = await api.post("/users/register", form);
       if (!res.ok) throw new Error("Registration failed");
-
       setMessage("✅ Registration successful!");
       setForm({ name: "", email: "", password: "", confirmPassword: "", college: "" });
     } catch (err) {

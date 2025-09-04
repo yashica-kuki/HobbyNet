@@ -16,4 +16,4 @@ app.get("/", (req, res) => {
 // Centralized routes
 app.use("/users", userRoutes);
 
-module.exports = app;
+module.exports=app;
