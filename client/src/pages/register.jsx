@@ -32,24 +32,12 @@ export default function RegisterPage() {
     if (Object.keys(validationErrors).length > 0) return;
 
     try {
-      const res = await api.post("/users/register", form);
-      if (!res.ok) throw new Error("Registration failed");
-      // await api.post("/users/register", form);
+      await api.post("/users/register", form);
+
       setMessage("✅ Registration successful!");
-      setForm({ name: "", email: "", password: "", confirmPassword: ""});
+      setForm({ name: "", email: "", password: "", confirmPassword: "" });
     } catch (err) {
       setMessage("❌ " + err.message);
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        setMessage(`❌ ${err.response.data.error || 'Registration failed'}`);
-      } else if (err.request) {
-        // The request was made but no response was received
-        setMessage("❌ Network Error. Please check your connection.");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        setMessage(`❌ ${err.message}`);
-      }
     }
   };
 
