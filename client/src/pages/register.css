@@ -1,40 +1,46 @@
-/* ===== Global Background ===== */
+/* Background with gradient overlay */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url("https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1600&q=80")
+      no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* Container centers the card */
 .register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
-  font-family: "Poppins", sans-serif;
+  height: 100vh;
   padding: 20px;
 }
 
-/* ===== Card ===== */
+/* Glass-style card */
 .register-card {
-  background: #ffffff0d; /* subtle transparency */
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 20px;
-  padding: 40px 32px;
+  padding: 40px;
   width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  animation: fadeIn 0.5s ease-in-out;
+  max-width: 500px;
+  color: black;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* ===== Heading ===== */
+/* Title */
 .register-card h2 {
   text-align: center;
-  font-size: 30px;
-  font-weight: 700;
-  color: #f8fafc;
-  margin-bottom: 28px;
+  margin-bottom: 25px;
+  font-size: 26px;
   letter-spacing: 1px;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+  color: white;
 }
 
-/* ===== Form Group ===== */
+/* Form groups */
 .form-group {
   margin-bottom: 18px;
 }
@@ -42,76 +48,72 @@
 .form-group label {
   display: block;
   font-size: 14px;
-  font-weight: 600;
   margin-bottom: 6px;
-  color: #e2e8f0;
+  color: black;
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px 14px;
-  font-size: 15px;
-  border: none;
+  padding: 12px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
+  border: none;
   outline: none;
+  font-size: 14px;
+  background: rgba(255, 255, 255, 0.25);
+  color: black;
   transition: all 0.3s ease;
 }
 
-.form-group input::placeholder {
-  color: #cbd5e1;
-}
-
+/* Input focus effect */
 .form-group input:focus {
   background: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 0 2px #6366f1;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
-/* ===== Button ===== */
+/* Error messages */
+.error {
+  color: #ff6b6b;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Success / error messages */
+.message {
+  text-align: center;
+  margin-bottom: 15px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+/* Button */
 .btn-submit {
-  margin-top: 8px;
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
-  color: #fff;
-  background: linear-gradient(135deg, #6366f1, #4338ca);
   cursor: pointer;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
   transition: all 0.3s ease;
 }
 
 .btn-submit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.5);
+  background: linear-gradient(135deg, #6b8bff, #8e5af0);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-/* ===== Error Message ===== */
-.error {
-  font-size: 13px;
-  color: #f87171;
-  margin-top: 4px;
-}
-
-/* ===== Animations ===== */
+/* Fade-in animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 600px) {
-  .register-card {
-    padding: 30px 22px;
-    border-radius: 16px;
+  from {
+    opacity: 0;
+    transform: translateY(15px);
   }
-  .register-card h2 {
-    font-size: 24px;
-  }
-  .btn-submit {
-    font-size: 15px;
-    padding: 12px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

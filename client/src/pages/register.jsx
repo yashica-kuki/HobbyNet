@@ -8,7 +8,6 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    college: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -22,7 +21,6 @@ export default function RegisterPage() {
       newErrors.password = "Password must be at least 6 characters";
     if (form.password !== form.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-    if (!form.college.trim()) newErrors.college = "College is required";
     return newErrors;
   };
 
@@ -36,10 +34,22 @@ export default function RegisterPage() {
     try {
       const res = await api.post("/users/register", form);
       if (!res.ok) throw new Error("Registration failed");
+      // await api.post("/users/register", form);
       setMessage("✅ Registration successful!");
-      setForm({ name: "", email: "", password: "", confirmPassword: "", college: "" });
+      setForm({ name: "", email: "", password: "", confirmPassword: ""});
     } catch (err) {
       setMessage("❌ " + err.message);
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        setMessage(`❌ ${err.response.data.error || 'Registration failed'}`);
+      } else if (err.request) {
+        // The request was made but no response was received
+        setMessage("❌ Network Error. Please check your connection.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setMessage(`❌ ${err.message}`);
+      }
     }
   };
 
@@ -93,16 +103,6 @@ export default function RegisterPage() {
             {errors.confirmPassword && (
               <p className="error">{errors.confirmPassword}</p>
             )}
-          </div>
-
-          <div className="form-group">
-            <label>College</label>
-            <input
-              type="text"
-              value={form.college}
-              onChange={(e) => setForm({ ...form, college: e.target.value })}
-            />
-            {errors.college && <p className="error">{errors.college}</p>}
           </div>
 
           <button type="submit" className="btn-submit">
