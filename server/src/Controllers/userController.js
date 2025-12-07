@@ -1,5 +1,6 @@
 const prisma = require("../db");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken"); // Import JWT
 
 const registerUser = async (req, res) => {
   try {
@@ -49,8 +50,16 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
     }
 
+    // --- GENERATE TOKEN ---
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET || "your_secret_key", // Use .env in production
+      { expiresIn: "1h" }
+    );
+
     res.status(200).json({
       message: "Login successful",
+      token, // Send the token to frontend
       user: {
         id: user.id,
         name: user.name,

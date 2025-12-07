@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../api/axios";
 import "./register.css";
+import { useNavigate } from "react-router-dom"; // Added for redirection
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -12,6 +13,7 @@ export default function RegisterPage() {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const validate = () => {
     const newErrors = {};
@@ -33,11 +35,19 @@ export default function RegisterPage() {
 
     try {
       await api.post("/users/register", form);
-
-      setMessage("✅ Registration successful!");
+      setMessage("✅ Registration successful! Redirecting...");
       setForm({ name: "", email: "", password: "", confirmPassword: "" });
+      
+      // Optional: Redirect to login after success
+      setTimeout(() => navigate("/login"), 1500);
+
     } catch (err) {
-      setMessage("❌ " + err.message);
+      // FIX: Access the actual backend error message
+      if (err.response && err.response.data && err.response.data.error) {
+         setMessage("❌ " + err.response.data.error);
+      } else {
+         setMessage("❌ Registration failed. Please try again.");
+      }
     }
   };
 
