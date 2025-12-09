@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../api/axios";
 import "./register.css";
-import { useNavigate } from "react-router-dom"; // Added for redirection
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
@@ -9,20 +9,34 @@ export default function RegisterPage() {
     email: "",
     password: "",
     confirmPassword: "",
+    hobbyName: "", // Added hobby
   });
 
+  const [existingHobbies, setExistingHobbies] = useState([]); // Store list from DB
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  // Fetch existing hobbies when page loads
+  useEffect(() => {
+    const fetchHobbies = async () => {
+        try {
+            const res = await api.get("/users/hobbies");
+            setExistingHobbies(res.data);
+        } catch (err) {
+            console.error("Could not load hobbies", err);
+        }
+    };
+    fetchHobbies();
+  }, []);
 
   const validate = () => {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.email.includes("@")) newErrors.email = "Valid email is required";
-    if (form.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
-    if (form.password !== form.confirmPassword)
-      newErrors.confirmPassword = "Passwords do not match";
+    if (form.password.length < 6) newErrors.password = "Password min 6 chars";
+    if (form.password !== form.confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    if (!form.hobbyName.trim()) newErrors.hobbyName = "Please add a hobby";
     return newErrors;
   };
 
@@ -36,17 +50,12 @@ export default function RegisterPage() {
     try {
       await api.post("/users/register", form);
       setMessage("✅ Registration successful! Redirecting...");
-      setForm({ name: "", email: "", password: "", confirmPassword: "" });
-      
-      // Optional: Redirect to login after success
       setTimeout(() => navigate("/login"), 1500);
-
     } catch (err) {
-      // FIX: Access the actual backend error message
-      if (err.response && err.response.data && err.response.data.error) {
+      if (err.response?.data?.error) {
          setMessage("❌ " + err.response.data.error);
       } else {
-         setMessage("❌ Registration failed. Please try again.");
+         setMessage("❌ Registration failed.");
       }
     }
   };
@@ -54,11 +63,11 @@ export default function RegisterPage() {
   return (
     <div className="register-container">
       <div className="register-card">
-        <h2>Register</h2>
-
+        <h2>Join the Community</h2>
         {message && <p className="message">{message}</p>}
 
         <form onSubmit={handleSubmit}>
+          {/* Name Input */}
           <div className="form-group">
             <label>Full Name</label>
             <input
@@ -69,6 +78,26 @@ export default function RegisterPage() {
             {errors.name && <p className="error">{errors.name}</p>}
           </div>
 
+          {/* HOBBY INPUT WITH AUTOCOMPLETE */}
+          <div className="form-group">
+            <label>Primary Hobby</label>
+            <input
+              list="hobby-options" 
+              type="text"
+              placeholder="e.g. Photography, Gaming, Hiking..."
+              value={form.hobbyName}
+              onChange={(e) => setForm({ ...form, hobbyName: e.target.value })}
+            />
+            {/* The Datalist: Shows options but allows custom typing */}
+            <datalist id="hobby-options">
+                {existingHobbies.map((h, index) => (
+                    <option key={index} value={h.name} />
+                ))}
+            </datalist>
+            {errors.hobbyName && <p className="error">{errors.hobbyName}</p>}
+          </div>
+
+          {/* Email Input */}
           <div className="form-group">
             <label>Email</label>
             <input
@@ -79,6 +108,7 @@ export default function RegisterPage() {
             {errors.email && <p className="error">{errors.email}</p>}
           </div>
 
+          {/* Password Inputs */}
           <div className="form-group">
             <label>Password</label>
             <input
@@ -94,18 +124,12 @@ export default function RegisterPage() {
             <input
               type="password"
               value={form.confirmPassword}
-              onChange={(e) =>
-                setForm({ ...form, confirmPassword: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
             />
-            {errors.confirmPassword && (
-              <p className="error">{errors.confirmPassword}</p>
-            )}
+            {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
           </div>
 
-          <button type="submit" className="btn-submit">
-            Register
-          </button>
+          <button type="submit" className="btn-submit">Register</button>
         </form>
       </div>
     </div>

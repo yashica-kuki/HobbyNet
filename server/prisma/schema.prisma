@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -18,15 +14,91 @@ model User {
   name      String
   email     String   @unique
   password  String
-  hobbies   Hobby[]  @relation("UserHobbies")
+  username  String?  @unique
+  avatar    String?
+  
+  // 1. User selects Broad Hobbies (Interests)
+  hobbies   Hobby[]  @relation("UserHobbies") 
+
+  // 2. User joins specific Niche Communities
+  communities Community[] @relation("UserCommunities")
+
+  posts       Post[]
+  comments    Comment[]
+  likes       Like[]
+  
+  followedBy  User[]   @relation("UserFollows")
+  following   User[]   @relation("UserFollows")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Hobby {
-  id        Int     @id @default(autoincrement())
-  name      String  @unique
-  users     User[]  @relation("UserHobbies")
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // e.g. "Gaming", "Art"
+  
+  // Relations
+  users       User[]      @relation("UserHobbies")
+  communities Community[] // One Hobby has many specific communities
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Community {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique // e.g. "Minecraft Server", "Oil Painting"
+  description String?
+  iconName    String?  @default("Users")
+  colorHex    String?  @default("#6366f1")
+
+  // Link Community to a Parent Hobby
+  hobbyId     Int?
+  hobby       Hobby?   @relation(fields: [hobbyId], references: [id])
+  
+  members     User[]   @relation("UserCommunities")
+  posts       Post[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String
+  
+  authorId    Int
+  author      User     @relation(fields: [authorId], references: [id])
+  
+  // Posts belong to a specific Community
+  communityId Int
+  community   Community @relation(fields: [communityId], references: [id])
+  
+  likes       Like[]
+  comments    Comment[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Keep Comment and Like models as is...
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  @@unique([postId, userId])
 }

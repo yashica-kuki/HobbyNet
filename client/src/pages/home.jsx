@@ -150,7 +150,7 @@ const Home = () => {
 
           <nav className="nav-links">
             <Link to="/">Home</Link>
-            <Link to="/community">Community</Link>
+            <Link to="/dashboard">DashBoard</Link>
             <Link to="/explore">Explore</Link>
             <Link to="/about">About</Link>
           </nav>

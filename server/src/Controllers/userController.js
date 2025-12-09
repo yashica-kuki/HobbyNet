@@ -1,13 +1,27 @@
 const prisma = require("../db");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken"); // Import JWT
+const jwt = require("jsonwebtoken");
 
+// 1. New function to get list of hobbies for the dropdown
+const getHobbies = async (req, res) => {
+  try {
+    const hobbies = await prisma.hobby.findMany({
+      select: { name: true }
+    });
+    res.json(hobbies);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch hobbies" });
+  }
+};
+
+// 2. Updated Register function
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    // added hobbyName to request body
+    const { name, email, password, hobbyName } = req.body; 
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: "All fields are required" });
+    if (!name || !email || !password || !hobbyName) {
+      return res.status(400).json({ error: "All fields including hobby are required" });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -17,12 +31,23 @@ const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // --- THE MAGIC PART ---
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        username: `@${name.split(' ')[0].toLowerCase()}${Math.floor(Math.random() * 1000)}`, // Auto-generate username
+        hobbies: {
+          connectOrCreate: {
+            where: { name: hobbyName }, // Look for hobby with this name
+            create: { name: hobbyName }, // If not found, create it
+          },
+        },
       },
+      include: {
+        hobbies: true // Return the hobbies in the response so we can see it worked
+      }
     });
 
     res.status(201).json({ message: "User registered successfully", user });
@@ -72,4 +97,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, getHobbies};
